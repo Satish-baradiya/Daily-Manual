@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse,HttpResponseRedirect
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from . models import Dairy
 
 # Create your views here.
 
@@ -12,7 +13,9 @@ from django.contrib.auth import authenticate, login, logout
 def index(request):
     if not request.user.is_authenticated:
         return render(request, "data/login.html")
-    return render(request, "data/home.html")
+    return render(request, "data/home.html",{
+        'dairy': Dairy.objects.all()
+    })
 
 
 def register(request):
@@ -43,7 +46,9 @@ def login_view(request):
         
         if user is not None:
             login(request,user)
-            return render(request,"data/home.html")
+            return render(request,"data/home.html",{
+                'dairy':Dairy.objects.all()
+            })
         else:
             return render(request,"data/login.html",{
                 "message":"Invalid Credentials"

@@ -1,6 +1,7 @@
 from audioop import reverse
 from email import message
 import imp
+from django.db import IntegrityError
 from django.shortcuts import render
 from django.http import HttpResponse,HttpResponseRedirect
 from django.contrib.auth.models import User
@@ -19,7 +20,6 @@ def index(request):
 
 
 def register(request):
-    message = ''
     if request.method == "POST":
         try:
             username = request.POST['username']
@@ -27,14 +27,21 @@ def register(request):
             user = User.objects.create_user(
                 username=username, password=password
             )
-            message = 'Registered Successfully'
+
             return render(request, "data/login.html", {
-                "message": message
+                "message": 'Registered Successfully'
             })
+
         except ValueError:
             return render(request, "data/register.html", {
                 "message": "Username and password can't be empty.!"
             })
+
+        except IntegrityError:
+            return render(request,'data/register.html',{
+                "message":"Username already taken try other username."
+            })
+            
     return render(request, "data/register.html")
 
 
